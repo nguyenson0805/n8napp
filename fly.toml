@@ -1,0 +1,73 @@
+app = "my-n8n-app" # đổi tên tuỳ ý
+primary_region = "sin"
+
+[build]
+  image = "n8nio/n8n:latest"
+
+[env]
+  N8N_USER_FOLDER = "/data"
+  N8N_PORT = "5678"
+  N8N_PROTOCOL = "https"
+
+  # Security
+  N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS = "true"
+  N8N_PUBLIC_API_DISABLED = "true"
+  N8N_PUBLIC_API_SWAGGERUI_DISABLED = "true"
+  N8N_DIAGNOSTICS_ENABLED = "false"
+  N8N_BLOCK_ENV_ACCESS_IN_NODE = "false"
+  N8N_GIT_NODE_DISABLE_BARE_REPOS = "true"
+
+  # Runners
+  N8N_RUNNERS_ENABLED = "true"
+
+  # Execution save settings
+  EXECUTIONS_DATA_SAVE_ON_ERROR = "all"
+  EXECUTIONS_DATA_SAVE_ON_SUCCESS = "all"
+  EXECUTIONS_DATA_SAVE_MANUAL_EXECUTIONS = "true"
+
+  # Binary data
+  N8N_AVAILABLE_BINARY_DATA_MODES = "filesystem"
+  N8N_DEFAULT_BINARY_DATA_MODE = "filesystem"
+  N8N_BINARY_DATA_STORAGE_PATH = "/data/binaryData"
+
+  # Timezone
+  GENERIC_TIMEZONE = "America/Los_Angeles"
+  TZ = "America/Los_Angeles"
+
+[[services]]
+  protocol = "tcp"
+  internal_port = 5678
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 1
+
+  [[services.ports]]
+    port = 80
+    handlers = ["http"]
+    force_https = true
+
+  [[services.ports]]
+    port = 443
+    handlers = ["tls", "http"]
+
+  [services.concurrency]
+    type = "requests"
+    hard_limit = 50
+    soft_limit = 25
+
+  [[services.http_checks]]
+    interval = "10s"
+    timeout = "5s"
+    method = "GET"
+    path = "/healthz"
+    protocol = "http"
+    grace_period = "15s"
+
+[[mounts]]
+  source = "n8n_data"
+  destination = "/data"
+
+[[vm]]
+  memory = "1gb"
+  cpu_kind = "shared"
+  cpus = 1
