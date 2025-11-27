@@ -1,4 +1,4 @@
-app = "my-n8n-app" # đổi tên tuỳ ý
+app = "n8n-app-cpc" # đổi tên tuỳ ý
 primary_region = "sin"
 
 [build]
